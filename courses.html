@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Courses - TechTrivia</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="slide-in">
+    <h1 id="tech-trivia">TechTrivia</h1>
+    <pre>
+
+    </pre>
+    <h2 id="course-head">Select a Course</h2>
+    <div class="courses-container">
+        <div class="course" onclick="loadCourse('Web Development')">Web Development</div>
+        <div class="course" onclick="loadCourse('Cyber Security')">Cyber Security</div>
+        <div class="course" onclick="loadCourse('Computer Networks')">Computer Networks</div>
+        <div class="course" onclick="loadCourse('Data Analysis')">Data Analysis</div>
+        <div class="course" onclick="loadCourse('Cloud Computing')">Cloud Computing</div>
+    </div>
+</div>
+
+<footer>
+    <p>&copy; 2025 TechTrivia created by Toluwalase Aro. All rights reserved.</p>
+</footer>
+
+<script>
+    function loadCourse(course) {
+        localStorage.setItem("course", course);
+        window.location.href = "quiz.html";
+    }
+</script>
+</body>
+</html>

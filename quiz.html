@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechTrivia - Quiz</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="tech-trivia">
+    <h1>TechTrivia</h1>
+    <div class="nav-content">
+        <a href="courses.html">Switch Course</a>
+        <a href="index.html">Home</a>
+    </div>
+</div>
+<div class="quiz-container slide-in">
+    <h2 id="score-board">Score: 0/5</h2>
+    <h2 id="question"></h2>
+    <p id="question-counter"></p>
+    <div class="options">
+    </div>
+    <button id="exit-button" onclick="exitQuiz()">Exit Quiz</button>
+    <button id="next-button" onclick="nextQuestion()">Next</button>
+</div>
+
+<div id="modal" style="display:none;">
+    <div class="modal-content">
+        <h3>You have completed the quiz!</h3>
+        <button id="yes-button" onclick="exitQuiz()">Exit Quiz</button>
+    </div>
+</div>
+
+<footer>
+    <p>&copy; 2025 TechTrivia created by Toluwalase Aro. All rights reserved.</p>
+</footer>
+
+<script>
+
+    // Variables to track quiz state
+    let currentCourse = "";
+    let currentQuestion = 0;
+    let correctAnswers = 0;
+    let score = 0;
+
+    // Course questions object
+    const courses = {
+        "Web Development": [
+            {
+                question: "What is the primary function of the display property in CSS?",
+                options: [
+                    {text: "To set the font size of an element", isCorrect: false},
+                    {text: "To set the background color of an element", isCorrect: false},
+                    {text: "To determine the layout of an element", isCorrect: true},
+                    {text: "To set the border style of an element", isCorrect: false},
+                    {text: "To set the padding of an element", isCorrect: false}
+                ]
+            },
+            {
+                question: "What is the purpose of the 'alt' attribute in an HTML 'img' tag?",
+                options: [
+                    { text: "To specify the width and height of the image", isCorrect: false },
+                    { text: "To provide a text description of the image for accessibility purposes", isCorrect: true },
+                    { text: "To link to another webpage when the image is clicked", isCorrect: false },
+                    { text: "To add a border around the image", isCorrect: false },
+                    { text: "To animate the image", isCorrect: false }
+                ]
+            },
+            {
+                question: "What is the purpose of the var keyword in JavaScript?",
+                options: [
+                    {text: "To declare a constant variable", isCorrect: false},
+                    {text: "To declare a global variable", isCorrect: false},
+                    {text: "To declare a local variable", isCorrect: true},
+                    {text: "To declare a function", isCorrect: false},
+                    {text: "To declare an object", isCorrect: false}
+                ]
+            },
+            {
+                question: "How do you add a CSS style to an HTML element using JavaScript?",
+                options: [
+                    {text: "element.style.property = value", isCorrect: true},
+                    {text: "element.attribute = value", isCorrect: false},
+                    {text: "element.class = value", isCorrect: false},
+                    {text: "element.id = value", isCorrect: false},
+                    {text: "element.name = value", isCorrect: false}
+                ]
+            },
+            {
+                question: "What is the difference between null and undefined in JavaScript?",
+                options: [
+                    {text: "null is a primitive value, while undefined is an object", isCorrect: false},
+                    {text: "null is an object, while undefined is a primitive value", isCorrect: false},
+                    {
+                        text: "null is used to represent an empty string, while undefined is used to represent a non-existent variable",
+                        isCorrect: false
+                    },
+                    {
+                        text: "null is used to represent a non-existent variable, while undefined is used to represent an empty string",
+                        isCorrect: true
+                    },
+                    {text: "null and undefined are interchangeable terms", isCorrect: false}
+                ]
+            }
+        ],
+        "Cyber Security": [
+            {
+                question: "What type of attack involves tricking a user into revealing sensitive information, such as passwords or credit card numbers?",
+                options: [
+                    {text: "Phishing", isCorrect: true},
+                    {text: "Malware", isCorrect: false},
+                    {text: "Ransomware", isCorrect: false},
+                    {text: "SQL Injection", isCorrect: false},
+                    {text: "Cross-Site Scripting (XSS)", isCorrect: false}
+                ]
+            },
+            {
+                question: "What is the primary purpose of a firewall in a computer network?",
+                options: [
+                    {text: "To block incoming traffic", isCorrect: false},
+                    {text: "To allow outgoing traffic", isCorrect: false},
+                    {text: "To filter out unwanted traffic", isCorrect: true},
+                    {text: "To encrypt data", isCorrect: false},
+                    {text: "To decrypt data", isCorrect: false}
+                ]
+            },
+            {
+                question: "What is the term for a type of malware that demands payment in exchange for restoring access to data?",
+                options: [
+                    {text: "Ransomware", isCorrect: true},
+                    {text: "Malware", isCorrect: false},
+                    {text: "Virus", isCorrect: false},
+                    {text: "Trojan", isCorrect: false},
+                    {text: "Spyware", isCorrect: false}
+                ]
+            },
+            {
+                question: "How can you protect your computer from malware?",
+                options: [
+                    {text: "By installing anti-virus software", isCorrect: true},
+                    {text: "By using a firewall", isCorrect: true},
+                    {text: "By keeping your operating system up-to-date", isCorrect: true},
+                    {text: "By using strong passwords", isCorrect: true},
+                ]
+            },
+            {
+                question: "What is the term for a type of cyber attack where an attacker sends a large amount of traffic to a website or network in an attempt to overwhelm it and make it unavailable?",
+                options: [
+                    {text: "Phishing", isCorrect: false},
+                    {text: "Malware", isCorrect: false},
+                    {text: "DDoS (Distributed Denial of Service)", isCorrect: true},
+                    {text: "SQL Injection", isCorrect: false},
+                    {text: "Cross-Site Scripting (XSS)", isCorrect: false}
+                ]
+            }
+            ],
+        "Computer Networks": [
+            {
+                question: "What is the primary function of a router in a computer network?",
+                options: [
+                    { text: "To connect devices to the internet", isCorrect: false },
+                    { text: "To switch packets between networks", isCorrect: true },
+                    { text: "To filter out unwanted traffic", isCorrect: false },
+                    { text: "To provide network security", isCorrect: false },
+                    { text: "To assign IP addresses to devices", isCorrect: false }
+                ]
+            },
+            {
+                question: "What is the term for a network that spans a large geographic area, such as a city or country?",
+                options: [
+                    { text: "LAN (Local Area Network)", isCorrect: false },
+                    { text: "WAN (Wide Area Network)", isCorrect: true },
+                    { text: "MAN (Metropolitan Area Network)", isCorrect: false },
+                    { text: "WLAN (Wireless Local Area Network)", isCorrect: false },
+                    { text: "VPN (Virtual Private Network)", isCorrect: false }
+                ]
+            },
+            {
+                question: "How do devices on a network communicate with each other?",
+                options: [
+                    { text: "Through the use of IP addresses", isCorrect: true },
+                    { text: "Through the use of MAC addresses", isCorrect: false },
+                    { text: "Through the use of DNS", isCorrect: false },
+                    { text: "Through the use of DHCP", isCorrect: false },
+                    { text: "Through the use of TCP/IP", isCorrect: false }
+                ]
+            },
+            {
+                question: "What is the term for a device that connects multiple networks together?",
+                options: [
+                    { text: "Router", isCorrect: true },
+                    { text: "Switch", isCorrect: false },
+                    { text: "Hub", isCorrect: false },
+                    { text: "Bridge", isCorrect: false },
+                    { text: "Gateway", isCorrect: false }
+                ]
+            },
+            {
+                question: "What is the primary purpose of the TCP/IP protocol?",
+                options: [
+                    { text: "To provide network security", isCorrect: false },
+                    { text: "To provide network connectivity", isCorrect: true },
+                    { text: "To provide data encryption", isCorrect: false },
+                    { text: "To provide data compression", isCorrect: false },
+                    { text: "To provide error correction", isCorrect: false }
+                ]
+            }
+        ],
+        "Data Analysis": [
+            {
+                question: "What is the term for the process of organizing and summarizing large datasets to extract insights and patterns?",
+                options: [
+                    { text: "Data Mining", isCorrect: true },
+                    { text: "Data Visualization", isCorrect: false },
+                    { text: "Data Warehousing", isCorrect: false },
+                    { text: "Data Governance", isCorrect: false },
+                    { text: "Data Analytics", isCorrect: false }
+                ]
+            },
+            {
+                question: "What is the primary purpose of a data warehouse?",
+                options: [
+                    { text: "To store data in a centralized location", isCorrect: true },
+                    { text: "To analyze data and extract insights", isCorrect: false },
+                    { text: "To visualize data in a graphical format", isCorrect: false },
+                    { text: "To govern data access and security", isCorrect: false },
+                    { text: "To mine data for patterns and trends", isCorrect: false }
+                ]
+            },
+            {
+                question: "What is the term for a type of data analysis that involves using statistical models to predict future outcomes?",
+                options: [
+                    { text: "Predictive Analytics", isCorrect: true },
+                    { text: "Descriptive Analytics", isCorrect: false },
+                    { text: "Diagnostic Analytics", isCorrect: false },
+                    { text: "Prescriptive Analytics", isCorrect: false },
+                    { text: "Text Analytics", isCorrect: false }
+                ]
+            },
+            {
+                question: "What is the primary purpose of data visualization?",
+                options: [
+                    { text: "To communicate complex data insights to stakeholders", isCorrect: true },
+                    { text: "To analyze data and extract insights", isCorrect: false },
+                    { text: "To store data in a centralized location", isCorrect: false },
+                    { text: "To govern data access and security", isCorrect: false },
+                    { text: "To mine data for patterns and trends", isCorrect: false }
+                ]
+            },
+            {
+                question: "What is the term for a statistical method used to identify patterns and relationships in large datasets by reducing the number of dimensions or features?",
+                options: [
+                    { text: "Regression Analysis", isCorrect: false },
+                    { text: "Decision Trees", isCorrect: false },
+                    { text: "Principal Component Analysis (PCA)", isCorrect: true },
+                    { text: "Cluster Analysis", isCorrect: false },
+                    { text: "Neural Networks", isCorrect: false }
+                ]
+            }
+            ],
+        "Cloud Computing": [
+            {
+                question: "What is the primary benefit of using cloud computing?",
+                options: [
+                    { text: "Reduced costs", isCorrect: true },
+                    { text: "Increased security", isCorrect: false },
+                    { text: "Improved scalability", isCorrect: false },
+                    { text: "Enhanced flexibility", isCorrect: false },
+                    { text: "All of the above", isCorrect: true }
+                ]
+            },
+            {
+                question: "What is the term for a cloud computing model where resources are provided over the internet?",
+                options: [
+                    { text: "IaaS (Infrastructure as a Service)", isCorrect: false },
+                    { text: "PaaS (Platform as a Service)", isCorrect: false },
+                    { text: "SaaS (Software as a Service)", isCorrect: true },
+                    { text: "Public Cloud", isCorrect: false },
+                    { text: "Private Cloud", isCorrect: false }
+                ]
+            },
+            {
+                question: "What is the term for a cloud computing deployment model where resources are provisioned over the internet?",
+                options: [
+                    { text: "Public Cloud", isCorrect: true },
+                    { text: "Private Cloud", isCorrect: false },
+                    { text: "Hybrid Cloud", isCorrect: false },
+                    { text: "Community Cloud", isCorrect: false },
+                    { text: "On-Premises", isCorrect: false }
+                ]
+            },
+            {
+                question: "What is the term for a cloud computing service that provides virtualized computing resources?",
+                options: [
+                    { text: "IaaS (Infrastructure as a Service)", isCorrect: true },
+                    { text: "PaaS (Platform as a Service)", isCorrect: false },
+                    { text: "SaaS (Software as a Service)", isCorrect: false },
+                    { text: "Serverless Computing", isCorrect: false },
+                    { text: "Containerization", isCorrect: false }
+                ]
+            },
+            {
+                question: "What is the term for a cloud computing security model that provides a secure connection between a user's device and a cloud provider's infrastructure?",
+                options: [
+                    { text: "VPN (Virtual Private Network)", isCorrect: true },
+                    { text: "Firewall", isCorrect: false },
+                    { text: "Intrusion Detection System", isCorrect: false },
+                    { text: "Encryption", isCorrect: false },
+                    { text: "Access Control", isCorrect: false }
+                ]
+            }
+        ]
+    };
+
+    // Function to load the questions for the selected course
+    // Function to load the questions for the selected course
+    function loadQuestions() {
+        currentCourse = localStorage.getItem("course");
+        currentQuestion = 0;
+        correctAnswers = 0;
+        score = 0;
+        loadQuestion();
+    }
+
+    // Function to load the question
+    function loadQuestion() {
+        const questionElement = document.getElementById("question");
+        const questionCounterElement = document.getElementById("question-counter");
+        const scoreBoardElement = document.getElementById("score-board");
+        const optionsElement = document.querySelector(".quiz-container .options");
+
+
+        // Update question text
+        questionElement.textContent = courses[currentCourse][currentQuestion].question;
+        questionCounterElement.textContent = `Question ${currentQuestion + 1} of ${courses[currentCourse].length}`;
+        scoreBoardElement.textContent = `Score: ${score}/${courses[currentCourse].length}`;
+
+        // Update options
+        optionsElement.innerHTML = "";
+        courses[currentCourse][currentQuestion].options.forEach((option) => {
+            const button = document.createElement("button");
+            button.textContent = option.text;
+            button.dataset.optionText = option.text;
+            button.onclick = () => {
+                checkAnswer(button, option.isCorrect);
+            };
+            optionsElement.appendChild(button);
+        });
+    }
+
+    // Function to check the answer
+    function checkAnswer(button, isCorrect) {
+        if (isCorrect) {
+            button.style.backgroundColor = "green";
+            correctAnswers++;
+            score++;
+            document.getElementById("score-board").textContent = `Score: ${score}/${courses[currentCourse].length}`;
+        } else {
+            button.style.backgroundColor = "red";
+
+            // Highlight the correct option in green
+            const options = document.querySelectorAll(".quiz-container .options button");
+            options.forEach((option) => {
+                if (option.textContent === courses[currentCourse][currentQuestion].options.find((o) => o.isCorrect).text) {
+                    option.style.backgroundColor = "green";
+                }
+            });
+        }
+
+        // Disable all buttons
+        const buttons = document.querySelectorAll(".quiz-container .options button");
+        buttons.forEach((button) => {
+            button.disabled = true;
+        });
+        // Enable next button
+        document.getElementById("next-button").disabled = false;
+    }
+
+    // Function to handle the "Next" button click
+    function nextQuestion() {
+        // Reset the buttons
+        const buttons = document.querySelectorAll(".quiz-container .options button");
+        buttons.forEach((button) => {
+            button.disabled = false;
+            button.style.backgroundColor = "";
+        });
+        currentQuestion++;
+        if (currentQuestion >= courses[currentCourse].length) {
+            // End of the course
+            let modal = document.getElementById("modal");
+            modal.style.display = "block";
+            document.querySelector(".modal-content").innerHTML = `
+                <h2>Quiz Completed!</h2>
+                <p>Congratulations, you have completed the ${currentCourse} course! Your final score is ${score} out of ${courses[currentCourse].length}.</p>
+                <button id="yes-button" onclick="exitQuiz()">Exit Quiz</button>
+    `;
+            document.getElementById("back-button").addEventListener("click", function() {
+                window.location.href = "courses.html";
+            });
+        } else {
+            loadQuestion();
+        }
+    }
+
+    // Function to handle the "Exit" button click
+    function exitQuiz() {
+        window.location.href = "courses.html";
+    }
+
+    // Load the questions for the selected course
+    loadQuestions();
+</script>
+</body>
+</html>
+
